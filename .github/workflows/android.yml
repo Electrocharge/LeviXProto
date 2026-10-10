@@ -1,0 +1,63 @@
+name: Android CI
+
+on:
+  push:
+    branches:
+      - "**"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout LeviXProto
+        uses: actions/checkout@v4
+
+      - name: Clone LeviLaunchroid and native submodules
+        run: |
+          set -euo pipefail
+          git clone https://github.com/LiteLDev/LeviLaunchroid.git launcher
+          git -C launcher checkout a2e3fa22192d431531591578dfa5823327d48355
+          git -C launcher submodule update --init --recursive
+
+      - name: Apply LeviXProto package patch
+        run: git -C launcher apply --whitespace=nowarn "$GITHUB_WORKSPACE/patches/levixproto.patch"
+
+      - name: Setup Java JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: "21"
+          distribution: temurin
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Accept licenses
+        run: yes | sdkmanager --licenses || true
+
+      - name: Install SDK packages
+        run: sdkmanager "platforms;android-36" "build-tools;35.0.0" "platform-tools"
+
+      - name: Setup Xmake
+        uses: xmake-io/github-action-setup-xmake@v1
+        with:
+          xmake-version: "2.9.9"
+
+      - name: Setup Android NDK
+        uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: r28c
+          link-to-sdk: true
+
+      - name: Build debug APK with NDK
+        working-directory: launcher
+        run: |
+          chmod +x ./gradlew
+          ./gradlew :app:assembleDebug --stacktrace
+
+      - name: Upload LeviXProto debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: LeviXProto-debug
+          path: launcher/app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
