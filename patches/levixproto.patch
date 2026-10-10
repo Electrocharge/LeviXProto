@@ -1,0 +1,205 @@
+diff --git a/app/build.gradle b/app/build.gradle
+index 53aa21e..2acf198 100644
+--- a/app/build.gradle
++++ b/app/build.gradle
+@@ -1,8 +1,13 @@
+ plugins {
+     alias(libs.plugins.android.application)
+     alias(libs.plugins.kotlin.android)
+-    alias(libs.plugins.google.services)
+-    alias(libs.plugins.firebase.crashlytics)
++}
++
++// Firebase is optional. CI has no google-services.json, so the NDK launcher still builds.
++def hasGoogleServices = file("google-services.json").exists()
++if (hasGoogleServices) {
++    apply plugin: "com.google.gms.google-services"
++    apply plugin: "com.google.firebase.crashlytics"
+ }
+ 
+ def localProperties = new Properties()
+@@ -39,7 +44,7 @@ android {
+     namespace 'org.levimc.launcher'
+     compileSdkVersion 36
+     defaultConfig {
+-        applicationId "org.levimc.launcher"
++        applicationId "org.levixproto.hax"
+         minSdkVersion 28
+         targetSdkVersion 35
+         versionCode getVersionCodeByTimestamp()
+@@ -75,9 +80,6 @@ android {
+         release {
+             minifyEnabled false
+             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+-            firebaseCrashlytics {
+-                nativeSymbolUploadEnabled true
+-            }
+             ndk {
+                 debugSymbolLevel 'FULL'
+             }
+@@ -86,9 +88,6 @@ android {
+         debug {
+             minifyEnabled false
+             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+-            firebaseCrashlytics {
+-                nativeSymbolUploadEnabled true
+-            }
+             ndk {
+                 debugSymbolLevel 'FULL'
+             }
+@@ -98,11 +97,7 @@ android {
+             initWith release
+             minifyEnabled false
+             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+-            firebaseCrashlytics {
+-                mappingFileUploadEnabled false
+-                nativeSymbolUploadEnabled true
+-            }
+-            resValue "string", "app_name", "LeviLauncher Beta"
++            resValue "string", "app_name", "LeviXProto Beta"
+             buildConfigField "boolean", "IS_BETA", "true"
+             matchingFallbacks = ["release"]
+             ndk {
+diff --git a/app/src/main/res/values-es/strings.xml b/app/src/main/res/values-es/strings.xml
+index fa91d0f..a2f2fa4 100644
+--- a/app/src/main/res/values-es/strings.xml
++++ b/app/src/main/res/values-es/strings.xml
+@@ -8,7 +8,7 @@
+ 
+ <resources>
+     <!-- Common -->
+-    <string name="app_name">LeviLauncher</string>
++    <string name="app_name">LeviXProto</string>
+     <string name="minecraft">Minecraft</string>
+     <string name="launch">Jugar</string>
+     <string name="beta_badge">Beta</string>
+diff --git a/app/src/main/res/values-fr/strings.xml b/app/src/main/res/values-fr/strings.xml
+index c570f9b..94f4ef5 100644
+--- a/app/src/main/res/values-fr/strings.xml
++++ b/app/src/main/res/values-fr/strings.xml
+@@ -8,7 +8,7 @@
+ 
+ <resources>
+     <!-- Common -->
+-    <string name="app_name">LeviLauncher</string>
++    <string name="app_name">LeviXProto</string>
+     <string name="minecraft">Minecraft</string>
+     <string name="launch">Lancer</string>
+     <string name="beta_badge">Bêta</string>
+diff --git a/app/src/main/res/values-hi/strings.xml b/app/src/main/res/values-hi/strings.xml
+index 3b08442..d46734d 100644
+--- a/app/src/main/res/values-hi/strings.xml
++++ b/app/src/main/res/values-hi/strings.xml
+@@ -8,7 +8,7 @@
+ 
+ <resources>
+     <!-- Common -->
+-    <string name="app_name">LeviLauncher</string>
++    <string name="app_name">LeviXProto</string>
+     <string name="minecraft">Minecraft</string>
+     <string name="launch">लॉन्च करें</string>
+     <string name="beta_badge">बीटा</string>
+diff --git a/app/src/main/res/values-idn/strings.xml b/app/src/main/res/values-idn/strings.xml
+index 08e6096..f847c63 100644
+--- a/app/src/main/res/values-idn/strings.xml
++++ b/app/src/main/res/values-idn/strings.xml
+@@ -8,7 +8,7 @@
+ 
+ <resources>
+     <!-- Common -->
+-    <string name="app_name">LeviLauncher</string>
++    <string name="app_name">LeviXProto</string>
+     <string name="minecraft">Minecraft</string>
+     <string name="launch">Luncurkan</string>
+     <string name="beta_badge">Beta</string>
+diff --git a/app/src/main/res/values-ja/strings.xml b/app/src/main/res/values-ja/strings.xml
+index bb79fd5..b4d69f2 100644
+--- a/app/src/main/res/values-ja/strings.xml
++++ b/app/src/main/res/values-ja/strings.xml
+@@ -8,7 +8,7 @@
+ 
+ <resources>
+     <!-- Common -->
+-    <string name="app_name">LeviLauncher</string>
++    <string name="app_name">LeviXProto</string>
+     <string name="minecraft">Minecraft</string>
+     <string name="launch">起動</string>
+     <string name="beta_badge">ベータ</string>
+diff --git a/app/src/main/res/values-pt/strings.xml b/app/src/main/res/values-pt/strings.xml
+index ac82652..d7857e8 100644
+--- a/app/src/main/res/values-pt/strings.xml
++++ b/app/src/main/res/values-pt/strings.xml
+@@ -8,7 +8,7 @@
+ 
+ <resources>
+     <!-- Common -->
+-    <string name="app_name">LeviLauncher</string>
++    <string name="app_name">LeviXProto</string>
+     <string name="minecraft">Minecraft</string>
+     <string name="launch">Iniciar</string>
+     <string name="beta_badge">Beta</string>
+diff --git a/app/src/main/res/values-ru/strings.xml b/app/src/main/res/values-ru/strings.xml
+index c4b2b66..8533f86 100644
+--- a/app/src/main/res/values-ru/strings.xml
++++ b/app/src/main/res/values-ru/strings.xml
+@@ -8,7 +8,7 @@
+ 
+ <resources>
+     <!-- Common -->
+-    <string name="app_name">LeviLauncher</string>
++    <string name="app_name">LeviXProto</string>
+     <string name="minecraft">Minecraft</string>
+     <string name="launch">Запустить</string>
+     <string name="beta_badge">Бета</string>
+diff --git a/app/src/main/res/values-tr/strings.xml b/app/src/main/res/values-tr/strings.xml
+index 4ac1f23..88ab088 100644
+--- a/app/src/main/res/values-tr/strings.xml
++++ b/app/src/main/res/values-tr/strings.xml
+@@ -8,7 +8,7 @@
+ 
+ <resources>
+     <!-- Common -->
+-    <string name="app_name">LeviLauncher</string>
++    <string name="app_name">LeviXProto</string>
+     <string name="minecraft">Minecraft</string>
+     <string name="launch">Başlat</string>
+     <string name="beta_badge">Beta</string>
+diff --git a/app/src/main/res/values-vi/strings.xml b/app/src/main/res/values-vi/strings.xml
+index 97dedba..6b1e2a8 100644
+--- a/app/src/main/res/values-vi/strings.xml
++++ b/app/src/main/res/values-vi/strings.xml
+@@ -8,7 +8,7 @@
+ 
+ <resources>
+     <!-- Common -->
+-    <string name="app_name">LeviLauncher</string>
++    <string name="app_name">LeviXProto</string>
+     <string name="minecraft">Minecraft</string>
+     <string name="launch">Khởi Chạy</string>
+     <string name="beta_badge">Thử Nghiệm</string>
+diff --git a/app/src/main/res/values-zh-rCN/strings.xml b/app/src/main/res/values-zh-rCN/strings.xml
+index dacd075..79ef20f 100644
+--- a/app/src/main/res/values-zh-rCN/strings.xml
++++ b/app/src/main/res/values-zh-rCN/strings.xml
+@@ -8,7 +8,7 @@
+ 
+ <resources>
+     <!-- Common -->
+-    <string name="app_name">LeviLauncher</string>
++    <string name="app_name">LeviXProto</string>
+     <string name="minecraft">Minecraft</string>
+     <string name="launch">启动</string>
+     <string name="beta_badge">Beta</string>
+diff --git a/app/src/main/res/values/strings.xml b/app/src/main/res/values/strings.xml
+index 9baac4c..cc4c777 100644
+--- a/app/src/main/res/values/strings.xml
++++ b/app/src/main/res/values/strings.xml
+@@ -8,7 +8,7 @@
+ 
+ <resources>
+     <!-- Common -->
+-    <string name="app_name">LeviLauncher</string>
++    <string name="app_name">LeviXProto</string>
+     <string name="minecraft">Minecraft</string>
+     <string name="launch">Launch</string>
+     <string name="beta_badge">Beta</string>
